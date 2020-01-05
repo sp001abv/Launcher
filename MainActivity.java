@@ -176,23 +176,6 @@ public class MainActivity extends Activity implements Thread.UncaughtExceptionHa
             showApps = all ? allApps : homeApps;
         }
 
-        void moveEventApp(float x, float y) {
-            int posX = (int)(x * POS_X / getWidth());
-            int posY = (int)(y * POS_Y / getHeight());
-            if (x > getWidth() - POS_X || y >= getHeight() - POS_Y) {
-                homeApps.remove(eventApp);
-                eventApp = null;
-                savePrefs();
-                postInvalidate();
-            }
-            else if (eventApp.posX != posX|| eventApp.posY != posY) {
-                eventApp.posX = posX;
-                eventApp.posY = posY;
-                savePrefs();
-                postInvalidate();
-            }
-        }
-
         void bringEventAppToHome() {
             showApps = homeApps;
             for(App app : homeApps) {
@@ -209,7 +192,6 @@ public class MainActivity extends Activity implements Thread.UncaughtExceptionHa
             app.posY = eventApp.posY;
             homeApps.add(app);
             eventApp = app;
-            savePrefs();
         }
 
         void loadAllApps()
@@ -256,9 +238,26 @@ public class MainActivity extends Activity implements Thread.UncaughtExceptionHa
                     launch(eventApp);
             } else if (action == MotionEvent.ACTION_MOVE){
                 if (eventApp != null) {
-                    if (showApps == allApps)
-                        bringEventAppToHome();
-                    moveEventApp(event.getX(), event.getY());
+                    if (showApps == homeApps &&
+                            (event.getX() > getWidth() - POS_X ||
+                                    event.getY() >= getHeight() - POS_Y)) {
+                        homeApps.remove(eventApp);
+                        eventApp = null;
+                        savePrefs();
+                        postInvalidate();
+                    }
+                    else {
+                        int posX = (int)(event.getX() * POS_X / getWidth());
+                        int posY =  (int)(event.getY() * POS_Y / getHeight());
+                        if (eventApp.posX != posX || eventApp.posY != posY) {
+                            if (showApps == allApps)
+                                bringEventAppToHome();
+                            eventApp.posX = posX;
+                            eventApp.posY = posY;
+                            savePrefs();
+                            postInvalidate();
+                        }
+                    }
                 }
             }
             return super.onTouchEvent(event);
