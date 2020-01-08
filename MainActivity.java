@@ -15,7 +15,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,8 +59,6 @@ public class MainActivity extends Activity implements Thread.UncaughtExceptionHa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Thread.setDefaultUncaughtExceptionHandler(this);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         loadPrefs();
         view = new HomeView(this);
         setContentView(view);
